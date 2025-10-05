@@ -4,6 +4,7 @@ import { TranslationHelper } from '../createTranslationHelper.js';
 import { IssueSchema } from '../types/zod/backlogOutputDefinition.js';
 import { buildToolSchema, ToolDefinition } from '../types/tool.js';
 import { customFieldsToPayload } from '../backlog/customFields.js';
+import { checkProjectRestriction } from '../utils/projectRestriction.js';
 
 const addIssueSchema = buildToolSchema((t) => ({
   projectId: z.number().describe(t('TOOL_ADD_ISSUE_PROJECT_ID', 'Project ID')),
@@ -116,10 +117,13 @@ export const addIssueTool = (
     schema: z.object(addIssueSchema(t)),
     outputSchema: IssueSchema,
     importantFields: ['summary', 'issueKey', 'description', 'createdUser'],
-    handler: async ({ customFields, ...params }) => {
+    handler: async ({ customFields, projectId, ...params }) => {
+      checkProjectRestriction(projectId);
+      
       const customFieldPayload = customFieldsToPayload(customFields);
 
       const finalPayload = {
+        projectId,
         ...params,
         ...customFieldPayload,
       };

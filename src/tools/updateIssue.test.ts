@@ -5,6 +5,11 @@ import { createTranslationHelper } from '../createTranslationHelper.js';
 
 describe('updateIssueTool', () => {
   const mockBacklog: Partial<Backlog> = {
+    getIssue: jest.fn<() => Promise<any>>().mockResolvedValue({
+      id: 1,
+      projectId: 100,
+      issueKey: 'TEST-1',
+    }),
     patchIssue: jest.fn<() => Promise<any>>().mockResolvedValue({
       id: 1,
       projectId: 100,

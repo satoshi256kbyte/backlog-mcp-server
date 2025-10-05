@@ -4,6 +4,7 @@ import { buildToolSchema, ToolDefinition } from '../types/tool.js';
 import { TranslationHelper } from '../createTranslationHelper.js';
 import { IssueSchema } from '../types/zod/backlogOutputDefinition.js';
 import { customFieldsToPayload } from '../backlog/customFields.js';
+import { default as env } from 'env-var';
 
 const getIssuesSchema = buildToolSchema((t) => ({
   projectId: z
@@ -167,8 +168,12 @@ export const getIssuesTool = (
       'issueType',
     ],
     outputSchema: IssueSchema,
-    handler: async ({ customFields, ...rest }) => {
+    handler: async ({ customFields, projectId, ...rest }) => {
+      const allowedProjectId = env.get('BACKLOG_PROJECT_ID').asString();
+      const finalProjectId = allowedProjectId ? [parseInt(allowedProjectId)] : projectId;
+      
       return backlog.getIssues({
+        projectId: finalProjectId,
         ...rest,
         ...customFieldsToPayload(customFields),
       });

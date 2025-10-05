@@ -4,6 +4,7 @@ import { buildToolSchema, ToolDefinition } from '../types/tool.js';
 import { TranslationHelper } from '../createTranslationHelper.js';
 import { WikiListItemSchema } from '../types/zod/backlogOutputDefinition.js';
 import { resolveIdOrKey } from '../utils/resolveIdOrKey.js';
+import { checkProjectRestriction } from '../utils/projectRestriction.js';
 
 const getWikiPagesSchema = buildToolSchema((t) => ({
   projectId: z
@@ -57,6 +58,9 @@ export const getWikiPagesTool = (
       if (!result.ok) {
         throw result.error;
       }
+      
+      checkProjectRestriction(result.value);
+      
       return backlog.getWikis({
         projectIdOrKey: result.value,
         keyword,

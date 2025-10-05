@@ -5,6 +5,7 @@ import { TranslationHelper } from '../createTranslationHelper.js';
 import { IssueSchema } from '../types/zod/backlogOutputDefinition.js';
 import { resolveIdOrKey } from '../utils/resolveIdOrKey.js';
 import { customFieldsToPayload } from '../backlog/customFields.js';
+import { checkProjectRestriction } from '../utils/projectRestriction.js';
 
 const updateIssueSchema = buildToolSchema((t) => ({
   issueId: z
@@ -153,6 +154,11 @@ export const updateIssueTool = (
       if (!result.ok) {
         throw result.error;
       }
+      
+      // Get issue to check project restriction
+      const issue = await backlog.getIssue(result.value);
+      checkProjectRestriction(issue.projectId);
+      
       const customFieldPayload = customFieldsToPayload(customFields);
 
       const finalPayload = {
