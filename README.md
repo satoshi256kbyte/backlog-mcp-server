@@ -47,11 +47,13 @@ The easiest way to use this MCP server is through MCP configurations:
         "--rm",
         "-e", "BACKLOG_DOMAIN",
         "-e", "BACKLOG_API_KEY",
+        "-e", "BACKLOG_PROJECT_ID",
         "ghcr.io/nulab/backlog-mcp-server"
       ],
       "env": {
         "BACKLOG_DOMAIN": "your-domain.backlog.com",
-        "BACKLOG_API_KEY": "your-api-key"
+        "BACKLOG_API_KEY": "your-api-key",
+        "BACKLOG_PROJECT_ID": "your-project-id"
       }
     }
   }
@@ -59,6 +61,7 @@ The easiest way to use this MCP server is through MCP configurations:
 ```
 
 Replace `your-domain.backlog.com` with your Backlog domain and `your-api-key` with your Backlog API key.
+Replace `your-project-id` with the ID of the Backlog project you want to interact with.
 
 ✅ If you cannot use --pull always, you can manually update the image using:
 
@@ -84,7 +87,8 @@ You can also run the server directly using `npx` without cloning the repository.
       ],
       "env": {
         "BACKLOG_DOMAIN": "your-domain.backlog.com",
-        "BACKLOG_API_KEY": "your-api-key"
+        "BACKLOG_API_KEY": "your-api-key",
+        "BACKLOG_PROJECT_ID": "your-project-id"
       }
     }
   }
@@ -92,6 +96,7 @@ You can also run the server directly using `npx` without cloning the repository.
 ```
 
 Replace `your-domain.backlog.com` with your Backlog domain and `your-api-key` with your Backlog API key.
+Replace `your-project-id` with the ID of the Backlog project you want to interact with.
 
 ### Option 3: Manual Setup (Node.js)
 
@@ -114,7 +119,8 @@ Replace `your-domain.backlog.com` with your Backlog domain and `your-api-key` wi
         ],
         "env": {
           "BACKLOG_DOMAIN": "your-domain.backlog.com",
-          "BACKLOG_API_KEY": "your-api-key"
+          "BACKLOG_API_KEY": "your-api-key",
+          "BACKLOG_PROJECT_ID": "your-project-id"
         }
       }
     }
@@ -315,12 +321,14 @@ Sample config:
         "--rm",
         "-e", "BACKLOG_DOMAIN",
         "-e", "BACKLOG_API_KEY",
+        "-e", "BACKLOG_PROJECT_ID",
         "-v", "/yourcurrentdir/.backlog-mcp-serverrc.json:/root/.backlog-mcp-serverrc.json:ro",
         "ghcr.io/nulab/backlog-mcp-server"
       ],
       "env": {
         "BACKLOG_DOMAIN": "your-domain.backlog.com",
-        "BACKLOG_API_KEY": "your-api-key"
+        "BACKLOG_API_KEY": "your-api-key",
+        "BACKLOG_PROJECT_ID": "your-project-id"
       }
     }
   }
@@ -375,12 +383,14 @@ To override the TOOL_ADD_ISSUE_COMMENT_DESCRIPTION:
         "--rm",
         "-e", "BACKLOG_DOMAIN",
         "-e", "BACKLOG_API_KEY",
+        "-e", "BACKLOG_PROJECT_ID",
         "-e", "BACKLOG_MCP_TOOL_ADD_ISSUE_COMMENT_DESCRIPTION"
         "ghcr.io/nulab/backlog-mcp-server"
       ],
       "env": {
         "BACKLOG_DOMAIN": "your-domain.backlog.com",
         "BACKLOG_API_KEY": "your-api-key",
+        "BACKLOG_PROJECT_ID": "your-project-id",
         "BACKLOG_MCP_TOOL_ADD_ISSUE_COMMENT_DESCRIPTION": "An alternative description"
       }
     }
@@ -472,6 +482,7 @@ This section demonstrates advanced configuration using multiple environment vari
         "--rm",
         "-e", "BACKLOG_DOMAIN",
         "-e", "BACKLOG_API_KEY",
+        "-e", "BACKLOG_PROJECT_ID",
         "-e", "MAX_TOKENS",
         "-e", "OPTIMIZE_RESPONSE",
         "-e", "PREFIX",
@@ -481,6 +492,7 @@ This section demonstrates advanced configuration using multiple environment vari
       "env": {
         "BACKLOG_DOMAIN": "your-domain.backlog.com",
         "BACKLOG_API_KEY": "your-api-key",
+        "BACKLOG_PROJECT_ID": "your-project-id",
         "MAX_TOKENS": "10000",
         "OPTIMIZE_RESPONSE": "1",
         "PREFIX": "backlog_",

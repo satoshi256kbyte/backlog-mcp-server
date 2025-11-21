@@ -4,6 +4,7 @@ import { TranslationHelper } from '../createTranslationHelper.js';
 import { IssueSchema } from '../types/zod/backlogOutputDefinition.js';
 import { buildToolSchema, ToolDefinition } from '../types/tool.js';
 import { customFieldsToPayload } from '../backlog/customFields.js';
+import { checkProjectRestriction } from '../utils/projectRestriction.js';
 
 const addIssueSchema = buildToolSchema((t) => ({
   projectId: z.number().describe(t('TOOL_ADD_ISSUE_PROJECT_ID', 'Project ID')),
@@ -79,7 +80,12 @@ const addIssueSchema = buildToolSchema((t) => ({
               'The ID of the custom field (e.g., 12345)'
             )
           ),
-        value: z.union([z.string().max(255), z.number(), z.array(z.string())]),
+        value: z
+          .union([z.number(), z.array(z.number())])
+          .optional()
+          .describe(
+            'The ID(s) of the custom field item. For single-select fields, provide a number. For multi-select fields, provide an array of numbers representing the selected item IDs.'
+          ),
         otherValue: z
           .string()
           .optional()
@@ -116,10 +122,13 @@ export const addIssueTool = (
     schema: z.object(addIssueSchema(t)),
     outputSchema: IssueSchema,
     importantFields: ['summary', 'issueKey', 'description', 'createdUser'],
-    handler: async ({ customFields, ...params }) => {
+    handler: async ({ customFields, projectId, ...params }) => {
+      checkProjectRestriction(projectId);
+      
       const customFieldPayload = customFieldsToPayload(customFields);
 
       const finalPayload = {
+        projectId,
         ...params,
         ...customFieldPayload,
       };

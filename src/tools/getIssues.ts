@@ -3,7 +3,9 @@ import { Backlog } from 'backlog-js';
 import { buildToolSchema, ToolDefinition } from '../types/tool.js';
 import { TranslationHelper } from '../createTranslationHelper.js';
 import { IssueSchema } from '../types/zod/backlogOutputDefinition.js';
-import { customFieldsToPayload } from '../backlog/customFields.js';
+import { customFieldFiltersToPayload } from '../backlog/customFields.js';
+import { buildCustomFieldFilterSchema } from './shared/customFieldFiltersSchema.js';
+import { default as env } from 'env-var';
 
 const getIssuesSchema = buildToolSchema((t) => ({
   projectId: z
@@ -131,20 +133,14 @@ const getIssuesSchema = buildToolSchema((t) => ({
     .optional()
     .describe(t('TOOL_GET_ISSUES_COUNT', 'Number of issues to retrieve')),
   customFields: z
-    .array(
-      z.object({
-        id: z
-          .number()
-          .describe(t('TOOL_GET_ISSUES_CUSTOM_FIELD_ID', 'Custom field ID')),
-        value: z
-          .union([z.string(), z.number(), z.array(z.string())])
-          .describe(
-            t('TOOL_GET_ISSUES_CUSTOM_FIELD_VALUE', 'Custom field value')
-          ),
-      })
-    )
+    .array(buildCustomFieldFilterSchema(t))
     .optional()
-    .describe(t('TOOL_GET_ISSUES_CUSTOM_FIELDS', 'Custom fields')),
+    .describe(
+      t(
+        'TOOL_GET_ISSUES_CUSTOM_FIELDS',
+        'Custom field filters (text, numeric, date, or list)'
+      )
+    ),
 }));
 
 export const getIssuesTool = (
@@ -167,10 +163,14 @@ export const getIssuesTool = (
       'issueType',
     ],
     outputSchema: IssueSchema,
-    handler: async ({ customFields, ...rest }) => {
+    handler: async ({ customFields, projectId, ...rest }) => {
+      const allowedProjectId = env.get('BACKLOG_PROJECT_ID').asString();
+      const finalProjectId = allowedProjectId ? [parseInt(allowedProjectId)] : projectId;
+      
       return backlog.getIssues({
+        projectId: finalProjectId,
         ...rest,
-        ...customFieldsToPayload(customFields),
+        ...customFieldFiltersToPayload(customFields),
       });
     },
   };
